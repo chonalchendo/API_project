@@ -1,0 +1,1 @@
+Personal project that aims to aggregate sports product information from numerous sporting manufacturers to produce novel product insights for app users
