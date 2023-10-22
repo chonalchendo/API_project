@@ -35,12 +35,42 @@ def response_handler(response: httpx.get) -> json:
         st.error(f"Error: {response.status_code} - {response.text}")
 
 
-def vis_metrics(data: dict) -> None:
+def product_metrics(data: dict) -> None:
+    pricing = data["pricing_information"]
+    attrs = data["attribute_list"]
+    c1, c2, c3, c4 = st.columns(4)
+    with st.container():
+        c1.metric("Current price", f"£{pricing['currentPrice']}")
+        c2.metric("Standard price", f"£{pricing['standard_price']}")
+        c3.metric("Weight", f"{attrs['weight']}")
+        c4.metric("Closure", f"{attrs['closure']}")
+    with st.container():
+        c1.metric("Surface", f"{attrs['surface']}")
+        c2.metric("Product fit", f"{attrs['productfit']}")
+        c3.metric("Toe height", f"{attrs['toe_stack_height']}")
+        c4.metric("Heel height", f"{attrs['heel_stack_height']}")
+
+
+def product_details(data: dict) -> st.markdown:
+    details = data["product_description"]["usps"]
+    s = " "
+    for i in details:
+        s += "- " + i + "\n"
+    return st.markdown(s)
+
+
+def review_metrics(data: dict) -> None:
     c1, c2, c3 = st.columns(3)
     with st.container():
         c1.metric("Overall Rating", f"{data['overallRating']}")
         c2.metric("Review Count", f"{data['reviewCount']}")
         c3.metric("Recommendation Percentage", f"{data['recommendationPercentage']}%")
+
+
+def get_product_images(data: dict) -> list[str]:
+    view_list = data["view_list"]
+    images = [image["image_url"] for image in view_list]
+    return images
 
 
 def create_ratings_df(data: dict, product_name: str) -> pd.DataFrame:
@@ -93,26 +123,49 @@ def main() -> None:
         # display product info
         st.title(f"{data['name']} Vs {data_2['name']}")
 
+        images_1 = get_product_images(data)
+        images_2 = get_product_images(data_2)
+
+        index = 0
+
+        if st.button("Next"):
+            index += 1
+
+        if st.button("Prev"):
+            if index > 0:
+                index = index - 1
+
         c6, c7 = st.columns(2)
         with st.container():
+            c6.image(
+                images_1[int(index)],
+                caption=data["product_description"]["subtitle"],
+                use_column_width=True,
+            )
+            c7.image(
+                images_2[int(index)],
+                caption=data_2["product_description"]["subtitle"],
+                use_column_width=True,
+            )
             c6.write(f"About: {data['product_description']['text']}")
             c7.write(f"About: {data_2['product_description']['text']}")
 
-            c6.image(
-                data["view_list"][0]["image_url"],
-                caption=data["product_description"]["subtitle"],
-            )
-            c7.image(
-                data_2["view_list"][0]["image_url"],
-                caption=data_2["product_description"]["subtitle"],
-            )
+            st.header(f"{data['name']} information", divider="rainbow")
+            product_metrics(data=data)
+            product_details(data=data)
+
+            st.header(f"{data_2['name']} information", divider="rainbow")
+            product_metrics(data=data_2)
+            product_details(data=data_2)
+
             ### STATS ####
             reviews = return_product_info(model=data["model_number"])
             reviews_2 = return_product_info(model=data_2["model_number"])
 
+            st.header("Review comparison", divider="rainbow")
             # visualise the metric data
-            vis_metrics(reviews)
-            vis_metrics(reviews_2)
+            review_metrics(reviews)
+            review_metrics(reviews_2)
 
         # create ratings and dist dataframes
         ratings_df_1 = create_ratings_df(data=reviews, product_name=data["name"])
