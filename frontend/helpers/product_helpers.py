@@ -31,8 +31,20 @@ def product_details(data: dict) -> st.markdown:
 
 def get_product_images(data: dict) -> list[str]:
     view_list = data["view_list"]
-    images = [image["image_url"] for image in view_list]
+    images = [
+        image["image_url"]
+        for image in view_list
+        if "standard" in image["type"] or "detail" in image["type"]
+    ]
     return images
+
+
+def create_image_grid(n: int, images: list[str]) -> None:
+    groups = [images[i : i + n] for i in range(0, len(images), n)]
+    for group in groups:
+        image_cols = st.columns(n)
+        for i, image in enumerate(group):
+            image_cols[i].image(image, use_column_width=True)
 
 
 def open_image(image_url: str):

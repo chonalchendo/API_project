@@ -1,7 +1,7 @@
-from fastapi import APIRouter
-from beanie import PydanticObjectId
 from app.models.adidas_model import Brands
 from app.utils.product_utils import ApiServices
+from beanie import PydanticObjectId
+from fastapi import APIRouter
 
 brands_router = APIRouter()
 
@@ -27,7 +27,7 @@ async def read_id(object_id: PydanticObjectId):
 
 
 @brands_router.get(
-    "/query",
+    "/query/",
     summary="Search via 6 different parameters",
     description="The user can query the database using any of the stated values",
     response_model=list[Brands],
@@ -70,7 +70,6 @@ async def get_ai_response(product: str, question: str | None = None):
 )
 async def get_product(product: str):
     return await ApiServices.product_from_api(product=product)
-
 
 
 # return product and can return similar products with the same model Id

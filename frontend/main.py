@@ -4,11 +4,15 @@ import httpx
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-from helpers.api_helpers import return_product_info
-from helpers.product_helpers import (get_product_images, product_details,
-                                     product_metrics)
-from helpers.review_helpers import (create_dist_df, create_ratings_df,
-                                    review_metrics)
+
+from helpers.api_helpers import handle_llm_response, return_product_info
+from helpers.product_helpers import (
+    create_image_grid,
+    get_product_images,
+    product_details,
+    product_metrics,
+)
+from helpers.review_helpers import create_dist_df, create_ratings_df, review_metrics
 
 # User is prompted to ask a question about product reviews
 # Spinner to indicate the question is being processed
@@ -22,10 +26,6 @@ from helpers.review_helpers import (create_dist_df, create_ratings_df,
 
 class Config:
     REVIEWS = ("helpful", "relevant", "newest")
-
-
-def create_bar_graph(df: pd.DataFrame, x_axis: str, y_axis: str, title: str) -> px.bar:
-    return px.bar(data_frame=df, x=x_axis, y=y_axis, title=title)
 
 
 def main() -> None:
@@ -45,11 +45,13 @@ def main() -> None:
         st.write("Vs")
         product_2 = st.text_input("Product 2", key="product_2")
 
-    product_tab, review_tab = st.tabs(["Product Info", "Review Info"])
-
+    product_tab, review_tab, llm_tab = st.tabs(
+        ["Product Info", "Review Info", "Review Chat"]
+    )
     if product and product_2:
         with product_tab:
             data = return_product_info(product=product)
+            time.sleep(5)
             data_2 = return_product_info(product=product_2)
 
             # display product info
@@ -58,37 +60,23 @@ def main() -> None:
             images_1 = get_product_images(data)
             images_2 = get_product_images(data_2)
 
-            index = 0
+            col_1, col_2 = st.columns(2)
 
-            if st.button("Next"):
-                index += 1
+            with col_1:
+                create_image_grid(n=3, images=images_1)
+                st.write(f"{data['product_description']['text']}")
 
-            if st.button("Prev"):
-                if index > 0:
-                    index = index - 1
+            with col_2:
+                create_image_grid(n=3, images=images_2)
+                st.write(f"{data_2['product_description']['text']}")
 
-            c6, c7 = st.columns(2)
-            with st.container():
-                c6.image(
-                    images_1[int(index)],
-                    caption=data["product_description"]["subtitle"],
-                    use_column_width=True,
-                )
-                c7.image(
-                    images_2[int(index)],
-                    caption=data_2["product_description"]["subtitle"],
-                    use_column_width=True,
-                )
-                c6.write(f"About: {data['product_description']['text']}")
-                c7.write(f"About: {data_2['product_description']['text']}")
+            st.header(f"{data['name']} information", divider="rainbow")
+            product_metrics(data=data)
+            product_details(data=data)
 
-                st.header(f"{data['name']} information", divider="rainbow")
-                product_metrics(data=data)
-                product_details(data=data)
-
-                st.header(f"{data_2['name']} information", divider="rainbow")
-                product_metrics(data=data_2)
-                product_details(data=data_2)
+            st.header(f"{data_2['name']} information", divider="rainbow")
+            product_metrics(data=data_2)
+            product_details(data=data_2)
 
             ### REVIEWS ####
             with review_tab:
@@ -165,7 +153,34 @@ def main() -> None:
                     with st.expander("Distribution insights"):
                         st.write("This is how people have voted")
 
-                ### AI REVIEW QUERY ###
+            ### AI REVIEW QUERY ###
+            with llm_tab:
+                # default LLM response
+                default_sort = "helpful"
+                default_question = "Can you succinctly summarise what customers said about this product? List what they liked and what they didn't like about the product"
+
+                data_llm_1 = handle_llm_response(
+                    sort=default_sort,
+                    question=default_question,
+                    model_id=data["model_number"],
+                )
+                # time.sleep(70)
+                data_llm_2 = handle_llm_response(
+                    sort=default_sort,
+                    question=default_question,
+                    model_id=data_2["model_number"],
+                )
+
+                column_1, column_2 = st.columns(2)
+                with column_1:
+                    with st.expander(f"What customers said about {data['name']}"):
+                        st.write(data_llm_1)
+                with column_2:
+                    with st.expander(f"What customers said about {data_2['name']}"):
+                        st.write(data_llm_2)
+                        st.empty()
+
+                st.header("Have any questions? Ask below!!")
 
                 sort = st.selectbox(
                     "What type of reviews would you like to know about?",

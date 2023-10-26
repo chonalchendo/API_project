@@ -67,7 +67,7 @@ class ReviewServices:
 
     @staticmethod
     async def cached_scraped_ai_response(
-        model_id: str, question: str
+        model_id: str, question: str, sort: str
     ) -> dict[str, str]:
         try:
             # load in scraper model with URL to put model_id in
@@ -76,7 +76,7 @@ class ReviewServices:
                 data = json.loads(cache)
             else:
                 print("scraping data")
-                data = scrape_adidas_reviews(model_id=model_id)
+                data = scrape_adidas_reviews(model_id=model_id, sort=sort)
                 if data is None:
                     handle_errors.error_404(detail="Data not found")
 

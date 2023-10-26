@@ -1,7 +1,6 @@
-from fastapi import APIRouter
-
 from app.models.adidas_model import Reviews, Sports
 from app.utils.review_utils import ReviewServices
+from fastapi import APIRouter
 
 reviews_router = APIRouter()
 
@@ -16,13 +15,15 @@ async def read_reviews():
 
 
 @reviews_router.get(
-    "/query/{model_id}",
+    "/query/",
     summary="Query reviews by modelId",
     # response_model=ReviewAIResponse,
 )
-async def query_by_parameter(model_id: str | None = None, question: str | None = None):
-    response = await ReviewServices.review_ai_response(
-        model_id=model_id, question=question, collection="reviews"
+async def query_by_parameter(
+    model_id: str | None = None, question: str | None = None, sort: str | None = None
+):
+    response = await ReviewServices.cached_scraped_ai_response(
+        model_id=model_id, question=question, sort=sort
     )
     return response
 

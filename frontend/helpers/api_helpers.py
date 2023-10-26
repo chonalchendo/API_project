@@ -20,3 +20,12 @@ def return_product_info(product: str | None = None, model: str | None = None):
     response = httpx.get(api, timeout=100)
     data = response_handler(response).pop(0)
     return data
+
+
+def handle_llm_response(
+    model_id: str | None = None, question: str | None = None, sort: str | None = None
+):
+    llm_api = f"http://localhost:8000/api/v1/reviews/query/?model_id={model_id}&question={question}&sort={sort}"
+    response = httpx.get(llm_api, timeout=100)
+    data = response_handler(response)
+    return data["response"]
