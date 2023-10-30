@@ -1,11 +1,12 @@
+import json
+
+from app.cache.manager import cache_instance
 from app.data.database import get_collection
 from app.llm.model import model
 from app.nlp.scripts.model import NLPModel
-from app.utils.api_helpers import (convert_dict_to_string,
-                                   convert_mongodb_doc_to_json)
+from app.utils.api_helpers import convert_dict_to_string, convert_mongodb_doc_to_json
 from app.utils.errors import handle_errors
-from app.utils.scrape import (get_product_from_api, scrape_adidas,
-                              scrape_adidas_reviews)
+from app.utils.scrape import get_product_from_api, scrape_adidas, scrape_adidas_reviews
 from beanie import Document, PydanticObjectId
 from fastapi.encoders import jsonable_encoder
 
@@ -36,9 +37,14 @@ class ApiServices:
     @staticmethod
     async def retrieve_product_api(product_id: str):
         try:
-            product = get_product_from_api(product=product_id)
-            if not product:
-                handle_errors.error_404(detail=f"Product ID {product_id} not found")
+            cache = cache_instance.get(key=product_id)
+            if cache:
+                product = json.loads(cache)
+            else:
+                product = get_product_from_api(product=product_id)
+                if not product:
+                    handle_errors.error_404(detail=f"Product ID {product_id} rot found")
+                cache_instance.set(key=product_id, value=json.dumps(product))
             return product
 
         except Exception as e:

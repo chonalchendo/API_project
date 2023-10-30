@@ -26,15 +26,26 @@ class ReviewServices:
             handle_errors.error_500(error=e)
 
     @staticmethod
-    async def review_stats(model: str) -> dict:
+    async def review_stats(model: str) -> list[dict]:
         try:
-            stats = scrape_review_stats(model=model)
-            if not stats:
-                handle_errors.error_404(detail="No review stats found")
-            return stats
+            cache = cache_instance.get(key=model)
+            if cache:
+                data = json.loads(cache)
+                if not data:
+                    handle_errors.error_404(detail="No review stats found")
+                if "reviewStats" not in data[0]:
+                    data[0]["reviewStats"] = scrape_review_stats(model=model)
+                    cache_instance.set(model, json.dumps(data))
+            else:
+                data = {}
+                data["reviewStats"] = scrape_review_stats(model=model)
+                if not data:
+                    handle_errors.error_404(detail="No review stats found")
+                cache_instance.set(key=model, value=json.dumps(data))
+            return data[0]["reviewStats"]
 
         except Exception as e:
-            handle_errors.error_500(detail="Internal Server Error", error=e)
+            handle_errors.error_500(detail="Server Error - Review Stats", error=e)
 
     @staticmethod
     async def review_ai_response(
@@ -74,24 +85,35 @@ class ReviewServices:
             cache = cache_instance.get(model_id)
             if cache:
                 data = json.loads(cache)
+                if not data:
+                    handle_errors.error_404(
+                        detail=f"No Review data for model {model_id}"
+                    )
+                if "reviewText" not in data[0]:
+                    data[0]["reviewText"] = scrape_adidas_reviews(
+                        model_id=model_id, sort=sort
+                    )
+                cache_instance.set(model_id, json.dumps(data))
+
             else:
+                data = {}
                 print("scraping data")
-                data = scrape_adidas_reviews(model_id=model_id, sort=sort)
-                if data is None:
+                data["reviewText"] = scrape_adidas_reviews(model_id=model_id, sort=sort)
+                if not data:
                     handle_errors.error_404(detail="Data not found")
+                cache_instance.set(model_id, json.dumps(data))
 
-            cache_instance.set(model_id, json.dumps(data))
+            if data:
+                reviews = list_serial(data[0]["reviewText"])
+                concatenated_text = " ".join(
+                    [item["title"] + item["text"] for item in reviews]
+                )
 
-            reviews = list_serial(data)
-            concatenated_text = " ".join(
-                [item["title"] + item["text"] for item in reviews]
-            )
-
-            ai_response = model(text=concatenated_text, query=question)
-            return {"response": ai_response["result"]}
+                ai_response = model(text=concatenated_text, query=question)
+                return {"response": ai_response["result"]}
 
         except Exception as e:
-            handle_errors.error_500(error=e)
+            handle_errors.error_500(error=e, detail="Server Error - LLM response")
 
     @staticmethod
     async def nlp_to_ai_response(collection: str, query: str, sort: str | None = None):

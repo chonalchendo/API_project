@@ -5,7 +5,11 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from helpers.api_helpers import handle_llm_response, return_product_info
+from helpers.api_helpers import (
+    handle_llm_response,
+    return_model_info,
+    return_product_info,
+)
 from helpers.product_helpers import (
     create_image_grid,
     get_product_images,
@@ -65,10 +69,18 @@ def main() -> None:
             with col_1:
                 create_image_grid(n=3, images=images_1)
                 st.write(f"{data['product_description']['text']}")
+                st.write(
+                    f"Go to the product website here: [{data['name']}](%s)"
+                    % data["meta_data"]["canonical"]
+                )
 
             with col_2:
                 create_image_grid(n=3, images=images_2)
                 st.write(f"{data_2['product_description']['text']}")
+                st.write(
+                    f"Go to the product website here: [{data_2['name']}](%s)"
+                    % data_2["meta_data"]["canonical"]
+                )
 
             st.header(f"{data['name']} information", divider="rainbow")
             product_metrics(data=data)
@@ -121,6 +133,9 @@ def main() -> None:
                         borderwidth=2,
                     )
                 )
+                ratings_fig.update_traces(
+                    textposition="outside", texttemplate="%{text}"
+                )
 
                 dist_fig = px.bar(
                     dist_df,
@@ -139,6 +154,7 @@ def main() -> None:
                         borderwidth=2,
                     )
                 )
+                dist_fig.update_traces(textposition="outside", texttemplate="%{text}")
 
                 col_1, col_2 = st.columns(2)
 
