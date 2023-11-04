@@ -1,6 +1,8 @@
 import pandas as pd
 import streamlit as st
 
+from helpers.api_helpers import return_product_info
+
 
 def review_metrics(data: dict) -> None:
     c1, c2, c3 = st.columns(3)
@@ -24,3 +26,34 @@ def create_dist_df(data: dict, product_name: str) -> pd.DataFrame:
     return pd.DataFrame(
         {"product": product_name, "value": rating_values, "count": rating_counts}
     )
+
+
+def flatten_review_stats(model: str, product_name: str) -> pd.DataFrame:
+    data = return_product_info(model=model)
+    extracted_data = {
+        "Product": product_name,
+        # "Model ID": data["modelId"],
+        "Overall Rating": data["overallRating"],
+        "Review Count": data["reviewCount"],
+        "Recommended": data["recommendationPercentage"],
+    }
+
+    for rating in data["secondaryRatings"]:
+        extracted_data[rating["name"]] = round(rating["averageRating"], 2)
+
+    for rating in data["ratingDistribution"]:
+        extracted_data[f"{rating['rating']} Star Rating"] = rating["count"]
+
+    return pd.DataFrame([extracted_data])
+
+
+def display_review_stats(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
+    df = (
+        pd.concat([df1, df2])
+        .set_index("Product")
+        .T.reset_index()
+        .rename(columns={"index": "Product"})
+        .set_index("Product")
+    )
+    df.columns.name = None
+    return df

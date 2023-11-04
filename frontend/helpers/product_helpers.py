@@ -1,6 +1,7 @@
 from io import BytesIO
 
 import httpx
+import pandas as pd
 import streamlit as st
 from PIL import Image
 
@@ -47,7 +48,53 @@ def create_image_grid(n: int, images: list[str]) -> None:
             image_cols[i].image(image, use_column_width=True)
 
 
-def open_image(image_url: str):
+def open_image(image_url: str) -> Image.open:
     get_image = httpx.get(image_url)
     image = Image.open(BytesIO(get_image.content))
     return image
+
+
+def prod_info_dataframe(data: list[dict], feature: str) -> pd.DataFrame:
+    if "wash" not in feature:
+        prod_info = [{**product[feature], "name": product["name"]} for product in data]
+    else:
+        prod_info = [
+            {**product["product_description"][feature], "name": product["name"]}
+            for product in data
+        ]
+
+    return pd.DataFrame(prod_info)
+
+    # return df.set_index("name").T.reset_index()
+
+
+def validate_columns(data: pd.DataFrame) -> pd.DataFrame:
+    list_cols = ["name"]
+    bool_cols = ["name"]
+    string_cols = []
+    int_cols = ["name"]
+    for col in data.columns.tolist():
+        is_list = data[col].apply(lambda x: isinstance(x, list))
+        if any(is_list):
+            list_cols.append(col)
+        if data[col].dtype == "bool":
+            bool_cols.append(col)
+        if data[col].dtype == "O" and not any(is_list):
+            string_cols.append(col)
+        if data[col].dtype == "int" or data[col].dtype == "float":
+            int_cols.append(col)
+
+    list_df = pd.DataFrame(data[list_cols])
+    bool_df = pd.DataFrame(data[bool_cols])
+    string_df = pd.DataFrame(data[string_cols])
+    int_df = pd.DataFrame(data[int_cols])
+
+    return list_df, bool_df, string_df, int_df
+
+
+def transpose_dataframes(data: pd.DataFrame) -> pd.DataFrame:
+    val_dfs = validate_columns(data)
+    list_df, bool_df, string_df, int_df = tuple(
+        [df.set_index("name").T.reset_index() for df in val_dfs]
+    )
+    return list_df, bool_df, string_df, int_df

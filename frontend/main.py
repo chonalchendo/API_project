@@ -5,18 +5,22 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from helpers.api_helpers import (
-    handle_llm_response,
-    return_model_info,
-    return_product_info,
-)
+from helpers.api_helpers import handle_llm_response, return_product_info
 from helpers.product_helpers import (
     create_image_grid,
     get_product_images,
+    prod_info_dataframe,
     product_details,
     product_metrics,
+    transpose_dataframes,
 )
-from helpers.review_helpers import create_dist_df, create_ratings_df, review_metrics
+from helpers.review_helpers import (
+    create_dist_df,
+    create_ratings_df,
+    display_review_stats,
+    flatten_review_stats,
+    review_metrics,
+)
 
 # User is prompted to ask a question about product reviews
 # Spinner to indicate the question is being processed
@@ -53,6 +57,7 @@ def main() -> None:
         ["Product Info", "Review Info", "Review Chat"]
     )
     if product and product_2:
+        ### PRODUCT TAB ###
         with product_tab:
             data = return_product_info(product=product)
             time.sleep(5)
@@ -90,6 +95,52 @@ def main() -> None:
             product_metrics(data=data_2)
             product_details(data=data_2)
 
+            features = [
+                "meta_data",
+                "attribute_list",
+                "pricing_information",
+                "product_description",
+                "wash_care_instructions",
+            ]
+
+            meta_table, attrs_table, pricing_table, desc_table, wash_table = [
+                prod_info_dataframe(data=[data, data_2], feature=feature)
+                for feature in features
+            ]
+
+            attrs_list, attrs_bool, attrs_string, attrs_int = transpose_dataframes(
+                attrs_table
+            )
+            price_list, price_bool, price_string, price_int = transpose_dataframes(
+                pricing_table
+            )
+
+            meta_list, meta_bool, meta_string, meta_int = transpose_dataframes(
+                meta_table
+            )
+
+            desc_list, desc_bool, desc_string, desc_int = transpose_dataframes(
+                desc_table
+            )
+
+            with st.expander("Product Website Information"):
+                st.dataframe(meta_string, hide_index=True, use_container_width=True)
+
+            with st.expander("Product Descriptions"):
+                st.dataframe(desc_string, hide_index=True, use_container_width=True)
+                st.dataframe(desc_list, hide_index=True, use_container_width=True)
+
+            with st.expander("Product Pricing Comparison"):
+                st.dataframe(price_int, hide_index=True, use_container_width=True)
+
+            with st.expander("Product Attribute Comparison"):
+                st.dataframe(attrs_list, hide_index=True, use_container_width=True)
+                st.dataframe(attrs_bool, hide_index=True, use_container_width=True)
+                st.dataframe(attrs_string, hide_index=True, use_container_width=True)
+
+            with st.expander("Product Washing Instructions"):
+                st.dataframe(wash_table, hide_index=True, use_container_width=True)
+
             ### REVIEWS ####
             with review_tab:
                 reviews = return_product_info(model=data["model_number"])
@@ -97,8 +148,16 @@ def main() -> None:
 
                 st.header("Review comparison", divider="rainbow")
                 # visualise the metric data
-                review_metrics(reviews)
-                review_metrics(reviews_2)
+
+                col_1, col_2 = st.columns(2)
+
+                with col_1:
+                    st.subheader(f":blue[{data['name']}]")
+                    review_metrics(reviews)
+
+                with col_2:
+                    st.subheader(f":red[{data_2['name']}]")
+                    review_metrics(reviews_2)
 
                 # create ratings and dist dataframes
                 ratings_df_1 = create_ratings_df(
@@ -169,6 +228,51 @@ def main() -> None:
                     with st.expander("Distribution insights"):
                         st.write("This is how people have voted")
 
+                df_1 = flatten_review_stats(
+                    model=data["model_number"], product_name=data["name"]
+                )
+                df_2 = flatten_review_stats(
+                    model=data_2["model_number"], product_name=data_2["name"]
+                )
+                df = display_review_stats(df_1, df_2)
+                product_df = df.iloc[:3]
+                second_ratings = df.iloc[3:7]
+                rating_dist = df.iloc[7:]
+
+                col_1, col_2, col_3 = st.columns(3)
+
+                with col_1:
+                    with st.expander("General Review Stats"):
+                        st.dataframe(
+                            data=(
+                                product_df.style.format("{:.1f}")
+                                .highlight_max(axis=1, color="green")
+                                .highlight_min(axis=1, color="red")
+                            ),
+                            use_container_width=True,
+                        )
+
+                with col_2:
+                    with st.expander("Detailed Ratings"):
+                        st.dataframe(
+                            data=(
+                                second_ratings.style.format("{:.2f}")
+                                .highlight_max(axis=1, color="green")
+                                .highlight_min(axis=1, color="red")
+                            ),
+                            use_container_width=True,
+                        )
+
+                with col_3:
+                    with st.expander("Ratings Distribution"):
+                        st.dataframe(
+                            data=(
+                                rating_dist.style.format("{:.0f}")
+                                .highlight_max(axis=1, color="green")
+                                .highlight_min(axis=1, color="red")
+                            ),
+                            use_container_width=True,
+                        )
             ### AI REVIEW QUERY ###
             with llm_tab:
                 # default LLM response
