@@ -8,7 +8,9 @@ import streamlit as st
 from helpers.api_helpers import handle_llm_response, return_product_info
 from helpers.product_helpers import (
     create_image_grid,
+    details_comp,
     get_product_images,
+    price_comp,
     prod_info_dataframe,
     product_details,
     product_metrics,
@@ -87,13 +89,17 @@ def main() -> None:
                     % data_2["meta_data"]["canonical"]
                 )
 
-            st.header(f"{data['name']} information", divider="rainbow")
-            product_metrics(data=data)
-            product_details(data=data)
+            st.divider()
 
-            st.header(f"{data_2['name']} information", divider="rainbow")
-            product_metrics(data=data_2)
-            product_details(data=data_2)
+            with st.container():
+                c1, c2 = st.columns(2)
+                with c1:
+                    st.subheader("Price")
+                    price_comp(data_1=data, data_2=data_2)
+
+                with c2:
+                    st.subheader("Product Details")
+                    details_comp(data_1=data, data_2=data_2)
 
             features = [
                 "meta_data",
@@ -154,7 +160,6 @@ def main() -> None:
                 with col_1:
                     st.subheader(f":blue[{data['name']}]")
                     review_metrics(reviews)
-
                 with col_2:
                     st.subheader(f":red[{data_2['name']}]")
                     review_metrics(reviews_2)
