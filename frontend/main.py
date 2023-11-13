@@ -7,15 +7,6 @@ from pages.chatbot import chatbot_page
 from pages.products import product_page
 from pages.reviews import reviews_page
 
-# User is prompted to ask a question about product reviews
-# Spinner to indicate the question is being processed
-# The response is returned in a text box
-# A link to the product and a photo of the product is displayed with the AI response
-
-# need to create a post request to take in the users query from streamlit
-# question is then posted into one of the functions detailed in the reviews_utils file
-# return the response of the post request via st.text
-
 
 def main() -> None:
     # Create the app

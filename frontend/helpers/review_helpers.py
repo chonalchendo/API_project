@@ -1,3 +1,5 @@
+from typing import Any
+
 import pandas as pd
 import streamlit as st
 
@@ -57,3 +59,22 @@ def display_review_stats(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
     )
     df.columns.name = None
     return df
+
+
+def format_review_info(
+    df1: list[dict[str, Any]], df2: list[dict[str, Any]]
+) -> pd.DataFrame:
+    """
+    Function to take review data from two products and merge both into a dataframe
+
+    args:
+        df1: list[dict[str, Any]] - product review data
+        df2: list[dict[str, Any]] - product review data
+    returns: pd.DataFrame - pandas dataframe
+    """
+    data = [*df1, *df2]
+    return pd.DataFrame(data)
+
+
+def create_timeseries_graph(df: pd.DataFrame):
+    df["submissionTime"] = df["submissionTime"].dt.strftime("%Y-%m-%d")

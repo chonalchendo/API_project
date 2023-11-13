@@ -26,6 +26,33 @@ class ReviewServices:
             handle_errors.error_500(error=e)
 
     @staticmethod
+    async def get_model_reviews_db(
+        collection: Document, model: str | None = None
+    ) -> list[Document]:
+        """
+        Function that returns all the review information for a specified model.
+
+        args:
+            collection: Document - The MongoDB collection to query
+            model: str | None = None - The model id to be queried
+
+        return: list[Document] - return a list of MongoDB documents
+
+        """
+        query = {}
+        if model:
+            query["modelId"] = model
+        try:
+            reviews = await collection.find(query).to_list()
+            if not reviews:
+                handle_errors.error_404(
+                    detail=f"Query did not return reviews for {model}"
+                )
+            return reviews
+        except Exception as e:
+            handle_errors.error_500(detail="Internal Server Error", error=e)
+
+    @staticmethod
     async def review_stats(model: str) -> list[dict]:
         try:
             cache = cache_instance.get(key=model)

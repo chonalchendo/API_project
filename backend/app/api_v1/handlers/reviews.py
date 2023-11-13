@@ -15,6 +15,13 @@ async def read_reviews():
 
 
 @reviews_router.get(
+    "/review_info/", summary="Get all the review information for a single model"
+)
+async def return_all_model_reviews(model: str):
+    return await ReviewServices.get_model_reviews_db(collection=Reviews, model=model)
+
+
+@reviews_router.get(
     "/query/",
     summary="Query reviews by modelId",
     # response_model=ReviewAIResponse,

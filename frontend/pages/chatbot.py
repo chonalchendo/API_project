@@ -2,6 +2,15 @@ import httpx
 import streamlit as st
 from helpers.api_helpers import handle_llm_response
 
+# User is prompted to ask a question about product reviews
+# Spinner to indicate the question is being processed
+# The response is returned in a text box
+# A link to the product and a photo of the product is displayed with the AI response
+
+# need to create a post request to take in the users query from streamlit
+# question is then posted into one of the functions detailed in the reviews_utils file
+# return the response of the post request via st.text
+
 
 class Config:
     REVIEWS = ("helpful", "relevant", "newest")
