@@ -43,32 +43,32 @@ class MetaData(BaseModel):
 
 
 class AttributeList(BaseModel):
-    sale: bool
+    sale: bool | None = None
     brand: str
     color: str
     gender: str
-    sport: list[str]
+    sport: list[str] | None = None
     weight: str | None = None
     closure: list[str]
     surface: list[str]
     category: str
     foot_type: str | None = None
-    sport_ids: list[str]
-    sportSub: list[str]
+    sport_ids: list[str] | None = None
+    sportSub: list[str] | None = None
     best_for_ids: list[str] | None = None
-    productfit: list[str]
-    base_material: list[str]
-    productType: list[str]
+    productfit: list[str] | None = None
+    base_material: list[str] | None = None
+    productType: list[str] | None = None
     technologies: list[str] | None = None
     personalizable: bool
     customizable: bool
-    toe_stack_height: str
-    heel_stack_height: str
+    toe_stack_height: str | None = None
+    heel_stack_height: str | None = None
     is_orderable: bool
     isWaitingRoomProduct: bool
     isInPreview: bool
     specialLaunch: bool
-    special_launch_type: str
+    special_launch_type: str | None = None
 
 
 class PricingInfo(BaseModel):
@@ -118,6 +118,17 @@ class Product(BaseModel):
 # adidas review schemas
 
 
+class CustomQs(BaseModel):
+    value: str | None = None
+    id: str | None = None
+    valueLabel: str | None = None
+    dimensionLabel: str | None = None
+
+
+class ReviewPhotos(BaseModel):
+    normalUrl: str | None = None
+
+
 class Reviews(BaseModel):
     id: str
     modelId: str | None = None
@@ -125,19 +136,44 @@ class Reviews(BaseModel):
     text: str | None = None
     isRecommended: bool
     rating: int
+    customQuestions: list[CustomQs] | None = None
+    positiveFeedbackCount: int | None = None
+    negativeFeedbackCount: int | None = None
+    photos: list[ReviewPhotos] | None = None
+    badges: list[str] | None = None
     locale: str | None = None
+    color: str | None = None
     submissionTime: str | None = None
     added: str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+class RatingLabel(BaseModel):
+    value: str | None = None
 
 
 class Rating(BaseModel):
     name: str
     averageRating: float
+    minLabel: RatingLabel | None = None
+    midLabel: RatingLabel | None = None
+    maxLabel: RatingLabel | None = None
 
 
 class Dist(BaseModel):
     rating: int
     count: int
+
+
+class InsightValues(BaseModel):
+    reviewCount: int | None = None
+    answerId: str | None = None
+    answerLabel: str | None = None
+
+
+class Insights(BaseModel):
+    questionId: str | None = None
+    label: str | None = None
+    values: list[InsightValues] | None = None
 
 
 class ReviewStats(BaseModel):
@@ -147,6 +183,7 @@ class ReviewStats(BaseModel):
     recommendationPercentage: int | None = None
     secondaryRatings: list[Rating] | None = None
     ratingDistribution: list[Dist] | None = None
+    insightsFilters: list[Insights] | None = None
 
 
 # ------------------------- Database retrival schemas ------------------------ #

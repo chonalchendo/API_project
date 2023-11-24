@@ -26,3 +26,4 @@ fake-useragent
 streamlit
 watchdog
 plotly
+icecream
