@@ -168,3 +168,4 @@ cython_debug/
 backend/app/nlp/old_output/
 backend/app/nlp/output/
 backend/app/nlp/train.spacy
+backend/app/data/config.py
