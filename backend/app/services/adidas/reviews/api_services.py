@@ -44,3 +44,6 @@ class APIServices:
 
         except Exception as e:
             handle_errors.error_500(detail="Server Error - Review Stats", error=e)
+
+
+review_api_service = APIServices()

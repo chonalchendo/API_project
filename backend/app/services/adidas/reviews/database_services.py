@@ -24,12 +24,14 @@ class DataBaseServices:
             handle_errors.error_500(error=e)
 
     @staticmethod
-    async def get_model_reviews_db(
+    async def get_model_reviews(
         collection: Document, model: str
     ) -> list[Document] | None:
         """
         Method that returns all the review information for a specified model from
         MongoDB.
+        The collection can be changed so that the review_stats collection can be
+        queried too.
 
         args:
             collection: Document - The MongoDB collection to query
@@ -49,3 +51,6 @@ class DataBaseServices:
             return reviews
         except Exception as e:
             handle_errors.error_500(detail="Internal Server Error", error=e)
+
+
+review_db_service = DataBaseServices()

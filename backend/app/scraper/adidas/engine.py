@@ -1,4 +1,6 @@
-from app.schemas.adidas_schema import AdidasShoe, Product, Reviews, ReviewStats
+from app.schemas.adidas.old_schema import AdidasShoe
+from app.schemas.adidas.product_schema import Product
+from app.schemas.adidas.review_schema import Reviews, ReviewStats
 
 from .downloader import AdidasDownloader
 

@@ -2,7 +2,9 @@ import logging
 import os
 from typing import Any
 
+from app.core.config import log
 from dotenv import load_dotenv
+from pymongo import database
 from pymongo.mongo_client import MongoClient
 
 load_dotenv()
@@ -51,6 +53,22 @@ def upload_data(database: str, collection: str, data: Any) -> None:
     logger.info(f"Data has been uploaded to {collection}")
 
 
+def change_field_name(database: str, collection: str, rename: dict[str, str]) -> None:
+    try:
+        db = local_connection(database)
+        db[collection].update_many({}, {"$rename": rename})
+    except Exception as e:
+        log.error(f"Database field has not been updated. Error - {e}")
+    finally:
+        log.info("Field name has been updated")
+
+
 def get_collection(database: str, collection: str) -> MongoClient:
     db = local_connection(database)
     return db[collection]
+
+
+if __name__ == "__main__":
+    change_field_name(
+        database="adidas", collection="product_detailed", rename={"id": "product_id"}
+    )

@@ -1,8 +1,7 @@
-from beanie import Document, PydanticObjectId
 from typing import Optional
-from pydantic import BaseModel, Field
-from uuid import UUID, uuid4
-from bson import ObjectId
+
+from beanie import Document
+from pydantic import BaseModel
 
 
 class AdidasImage(BaseModel):
@@ -65,18 +64,3 @@ class Sports(Document):
 
     class Settings:
         name = "sports"
-
-
-class Reviews(Document):
-    # id: str
-    modelId: str
-    title: str
-    text: str
-    isRecommended: bool
-    rating: int
-    locale: str
-    submissionTime: str
-    added: str
-    
-    class Settings:
-        name = "reviews"

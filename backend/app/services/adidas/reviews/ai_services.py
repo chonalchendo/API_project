@@ -6,8 +6,8 @@ from app.core.config import log
 from app.data.database import get_collection
 from app.llm.model import model
 from app.nlp.scripts.model import NLPModel
-from app.schemas.adidas_schema import list_serial
 from app.scraper.adidas.run import review_scraper
+from app.utils.ai_helpers import list_serial
 from app.utils.errors import handle_errors
 
 
@@ -165,3 +165,6 @@ class ReviewAIServices:
         log.info("--- generating AI response ---")
         ai_response = model(text=concatenated_text, query=query)
         return {"response": ai_response["result"]}
+
+
+review_ai_service = ReviewAIServices()

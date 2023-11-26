@@ -1,11 +1,14 @@
 import uvicorn
-from app.api_v1.router import router
-from app.core.config import settings
-from app.models.adidas_model import Brands, Reviews, Sports
 from beanie import init_beanie
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
+
+from app.api_v1.router import router
+from app.core.config import settings
+from app.models.adidas.old_model import Brands, Sports
+from app.models.adidas.product_model import Product
+from app.models.adidas.review_model import Reviews, ReviewStats
 
 app = FastAPI(
     title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json"
@@ -29,7 +32,7 @@ async def app_init():
 
     await init_beanie(
         database=db_client,
-        document_models=[Brands, Sports, Reviews],
+        document_models=[Brands, Sports, Reviews, ReviewStats, Product],
     )
 
 

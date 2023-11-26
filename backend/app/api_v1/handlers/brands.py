@@ -1,4 +1,4 @@
-from app.models.adidas_model import Brands
+from app.models.adidas.old_model import Brands
 from app.utils.product_utils import ApiServices
 from beanie import PydanticObjectId
 from fastapi import APIRouter

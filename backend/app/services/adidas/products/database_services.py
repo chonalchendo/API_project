@@ -78,10 +78,10 @@ class DataBaseServices:
         """
         query = {}
         if product:
-            query["productId"] = product
+            query["product_id"] = product
         if model:
-            query["modelId"] = model
-        if price is not None:
+            query["model_number"] = model
+        if price:
             query["price"] = price
         if category:
             query["category"] = category
@@ -102,3 +102,6 @@ class DataBaseServices:
 
         except Exception as e:
             handle_errors.error_500(detail="Internal server error", error=e)
+
+
+product_db = DataBaseServices()
