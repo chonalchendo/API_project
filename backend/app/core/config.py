@@ -1,5 +1,8 @@
+import logging
+
 from decouple import config
 from pydantic_settings import BaseSettings
+from rich.logging import RichHandler
 
 
 class Settings(BaseSettings):
@@ -19,4 +22,14 @@ class Settings(BaseSettings):
         case_sensitive = True
 
 
+# logging set up
+logging.basicConfig(
+    level="NOTSET",
+    format="%(levelname)s [%(asctime)s] %(name)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[RichHandler(rich_tracebacks=True)],
+)
+
+# load config variables
+log = logging.getLogger("rich")
 settings = Settings()

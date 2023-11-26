@@ -1,16 +1,17 @@
 import os
+
 from dotenv import load_dotenv
 from langchain import PromptTemplate
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.vectorstores import FAISS
 
 load_dotenv()
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-MODEL = "gpt-3.5-turbo"
+MODEL = "gpt-4"
 TEMPERATURE = 0.1
 
 
