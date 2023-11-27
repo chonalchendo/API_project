@@ -30,3 +30,5 @@ class Connector:
             return client[database]
         except ConnectionFailure as e:
             log.error(e)
+            
+    
