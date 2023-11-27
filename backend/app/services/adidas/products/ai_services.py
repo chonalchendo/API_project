@@ -1,7 +1,7 @@
 from typing import Any
 
 from app.core.config import log
-from app.data.database import get_collection
+from app.database.manager import adidas_db as db
 from app.llm.model import model
 from app.nlp.scripts.model import NLPModel
 from app.utils.api_helpers import convert_dict_to_string, convert_mongodb_doc_to_json
@@ -33,11 +33,10 @@ class ProdAIServices:
         Return:
             (dict[str, Any] | None) - Returns the response as a dictionary or Nonetype
         """
-        coll = get_collection(database="adidas", collection=collection)
         if product:
             query = {"productId": product}
             try:
-                doc = coll.find_one(query)
+                doc = db.fetch_data(collection=collection, query=query)
                 if not doc:
                     handle_errors.error_404(detail="Product not found")
 

@@ -3,7 +3,7 @@ from typing import Any
 
 from app.cache.manager import cache_instance
 from app.core.config import log
-from app.data.database import get_collection
+from app.database.manager import adidas_db as db
 from app.llm.model import model
 from app.nlp.scripts.model import NLPModel
 from app.scraper.adidas.run import review_scraper
@@ -29,12 +29,12 @@ class ReviewAIServices:
             model_id: str - model id
             question: str - user question
         """
-        coll = get_collection(database="adidas", collection=collection)
         try:
             if model_id:
                 query = {"modelId": model_id}
 
-            reviews = list_serial(coll.find(query))
+            data = db.fetch_data(collection=collection, query=query)
+            reviews = list_serial(data)
             if reviews is None:
                 handle_errors.error_404(detail="No review found")
 
@@ -125,7 +125,7 @@ class ReviewAIServices:
         Returns:
             dict[str, Any] - dictionary with str key and any value
         """
-        coll = get_collection(database="adidas", collection=collection)
+        # coll = get_collection(database="adidas", collection=collection)
         # take in the users query
         log.info("--- processing nlp model ---")
         filter = NLPModel.model(query=query)
@@ -133,10 +133,11 @@ class ReviewAIServices:
         log.info("--- getting filter key value pairs ---")
         filters = {key: value for key, value in filter.items()}
         if "displayName" in filters.keys():
-            filter = {"diplayName": filters["displayName"]}
+            db_query = {"diplayName": filters["displayName"]}
 
             # get the model_id to filter the api request
-            data = list(coll.find(filter))
+            data = db.fetch_data(collection=collection, query=db_query)
+            # data = list(coll.find(filter))
             model_id = [
                 {key: value}
                 for d in data

@@ -26,7 +26,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def app_init():
     """
-    Initialise crucial application services
+    Initialise crucial application services.
     """
     db_client = AsyncIOMotorClient(settings.MONGO_CONNECTION_STRING).adidas
 
