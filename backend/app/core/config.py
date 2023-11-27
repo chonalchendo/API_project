@@ -9,8 +9,11 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "Blue Ribbon 2"
     MONGO_CONNECTION_STRING: str = config("MONGO_CONNECTION_STRING", cast=str)
+    ATLAS_CONNECTION_STRING: str = config("ATLAS_CONNECTION_STRING", cast=str)
     OPENAI_API_KEY: str = config("OPENAI_API_KEY", cast=str)
-    # REDIS_CONNECTION: Redis = Redis(host="localhost", port=6379, db=0)
+    SCRAPEOPS_API_KEY: str = config("SCRAPEOPS_API_KEY", cast=str)
+    ZENROWS_API_KEY: str = config("ZENROWS_API", cast=str)
+    IPROYAL_API_KEY: str = config("IPROYAL_API", cast=str)
     ORIGINS: list = [
         "http://localhost",
         "http://localhost:8501",

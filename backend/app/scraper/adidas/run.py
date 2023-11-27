@@ -1,9 +1,9 @@
 import time
 from typing import Any
 
+from app.core.config import log
 from fastapi.encoders import jsonable_encoder
 
-from ..config import log
 from .engine import ProductScraper, ReviewScraper
 
 

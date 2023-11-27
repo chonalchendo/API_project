@@ -1,15 +1,15 @@
 from typing import Any, Generator
 
 import httpx
+from app.core.config import log
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from ..config import log, proxies
+from ..config import proxies
 
 
 class AdidasDownloader:
     def __init__(self) -> None:
         self.proxy = proxies
-        # self.scrapeops_headers = get_headers_list(num_headers=1)
         self.timeout = httpx.Timeout(10.0, connect=60.0)
 
     @retry(stop=stop_after_attempt(4), wait=wait_fixed(1))

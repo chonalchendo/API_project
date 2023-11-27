@@ -1,42 +1,25 @@
-import logging
-import os
 from typing import Any
 
-from app.core.config import log
-from dotenv import load_dotenv
-from pymongo import database
+from app.core.config import log, settings
 from pymongo.mongo_client import MongoClient
-
-load_dotenv()
-
-mongodb_conn_string = os.getenv("MONGO_CONNECTION_STRING")
-atlas_conn_string = os.getenv("ATLAS_CONNECTION_STRING")
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 def local_connection(database: str) -> MongoClient:
-    client = MongoClient(mongodb_conn_string)
-    db = client[database]
-    return db
+    client = MongoClient(settings.MONGO_CONNECTION_STRING)
+    return client[database]
 
 
 def atlas_connection(database: str) -> MongoClient:
-    uri = atlas_conn_string
-
     # Create a new client and connect to the server
-    client = MongoClient(uri)
+    client = MongoClient(settings.ATLAS_CONNECTION_STRING)
 
     # Send a ping to confirm a successful connection
     try:
         client.admin.command("ping")
-        print("Pinged your deployment. You successfully connected to MongoDB!")
+        log.info("Pinged your deployment. You successfully connected to MongoDB!")
+        return client[database]
     except Exception as e:
-        print(e)
-
-    return client[database]
+        log.error(e)
 
 
 def delete_data(database: str, collection: str) -> None:
@@ -49,8 +32,8 @@ def upload_data(database: str, collection: str, data: Any) -> None:
         db = local_connection(database)
         db[collection].insert_many(data)
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
-    logger.info(f"Data has been uploaded to {collection}")
+        log.error(f"An error occurred: {e}")
+    log.info(f"Data has been uploaded to {collection}")
 
 
 def change_field_name(database: str, collection: str, rename: dict[str, str]) -> None:
