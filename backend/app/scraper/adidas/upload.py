@@ -1,7 +1,12 @@
-from app.data.database import upload_data
+from app.core.config import settings
+from app.database.handler import Handler
 from icecream import ic
 
 from .run import product_scraper, review_scraper
+
+local_db = Handler(
+    connection_string=settings.MONGO_CONNECTION_STRING, database="adidas"
+)
 
 
 def upload_multi_prods(range: str) -> None:
@@ -15,7 +20,7 @@ def upload_multi_prods(range: str) -> None:
     Return: None
     """
     data = product_scraper.scrape_multi_prods(fashion_line=range)
-    upload_data(database="adidas", collection="product", data=data)
+    local_db.upload_data(collection="product", data=data)
 
 
 def upload_detailed_prod(product: str) -> None:
@@ -30,7 +35,7 @@ def upload_detailed_prod(product: str) -> None:
     """
     data = product_scraper.scrape_detail_product(product=product)
     ic(data)
-    upload_data(database="adidas", collection="product_detailed", data=data)
+    local_db.upload_data(collection="product_detailed", data=data)
 
 
 def upload_model_reviews(model: str) -> None:
@@ -44,7 +49,7 @@ def upload_model_reviews(model: str) -> None:
     Return: None
     """
     data = review_scraper.scrape_model_reviews(model=model)
-    upload_data(database="adidas", collection="reviews", data=data)
+    local_db.upload_data(collection="reviews", data=data)
 
 
 def upload_review_stats(model: str) -> None:
@@ -59,4 +64,4 @@ def upload_review_stats(model: str) -> None:
     """
     data = review_scraper.scrape_review_stats(model=model)
     ic(data)
-    upload_data(database="adidas", collection="review_stats", data=data)
+    local_db.upload_data(collection="review_stats", data=data)
