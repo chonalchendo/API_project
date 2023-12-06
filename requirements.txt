@@ -27,3 +27,4 @@ streamlit
 watchdog
 plotly
 icecream
+yarl

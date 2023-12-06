@@ -35,13 +35,13 @@ class ReviewAIServices:
 
             data = db.fetch_data(collection=collection, query=query)
             reviews = list_serial(data)
-            if reviews is None:
+            if not reviews:
                 handle_errors.error_404(detail="No review found")
 
             concatenated_text = " ".join(
                 [item["title"] + item["text"] for item in reviews]
             )
-            if concatenated_text is None:
+            if not concatenated_text:
                 handle_errors.error_404(detail="No string detected")
 
             ai_response = model(text=concatenated_text, query=question)

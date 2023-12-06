@@ -6,23 +6,29 @@ product_router = APIRouter()
 
 
 @product_router.get(
-    "/", summary="Query MongoDB product collection for products based on user queries"
+    "/",
+    summary="Query MongoDB product collection for products based on user queries",
+    status_code=200,
 )
-async def get_product(
-    product: str | None = None,
+async def query_products(
     model: str | None = None,
     price: int | None = None,
     category: str | None = None,
     division: str | None = None,
     sport: str | None = None,
 ):
-    product = await product_db.parameter_query(
+    return await product_db.parameter_query(
         collection=Product,
-        product=product,
         model=model,
         price=price,
         category=category,
         division=division,
         sport=sport,
     )
-    return product
+
+
+@product_router.get(
+    "/{product}", summary="Return a single product from MongoDB", status_code=200
+)
+async def return_product(product: str):
+    return await product_db.parameter_query(collection=Product, product=product)

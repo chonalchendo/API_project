@@ -33,11 +33,12 @@ class DataBaseServices:
         The collection can be changed so that the review_stats collection can be
         queried too.
 
-        args:
+        Args:
             collection: Document - The MongoDB collection to query
             model: str - The model id to be queried
 
-        return: list[Document] - return a list of MongoDB documents
+        Returns:
+            list[Document] - return a list of MongoDB documents
 
         """
         if model:

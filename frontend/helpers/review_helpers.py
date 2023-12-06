@@ -3,7 +3,7 @@ from typing import Any
 import pandas as pd
 import streamlit as st
 
-from helpers.api_helpers import return_product_info
+from helpers.api_helpers import review_stats_query
 
 
 def review_metrics(data: dict) -> None:
@@ -31,7 +31,7 @@ def create_dist_df(data: dict, product_name: str) -> pd.DataFrame:
 
 
 def flatten_review_stats(model: str, product_name: str) -> pd.DataFrame:
-    data = return_product_info(model=model)
+    data = review_stats_query(model=model)
     extracted_data = {
         "Product": product_name,
         # "Model ID": data["modelId"],

@@ -26,4 +26,8 @@ def list_serial(reviews: list[dict[str, Any]]) -> list[dict[str, str]]:
     Return:
         list[dict[str, str]]
     """
-    return [individual_serial(review) for review in reviews]
+    return [
+        item
+        for item in (individual_serial(review) for review in reviews)
+        if item is not None
+    ]

@@ -73,7 +73,7 @@ class Handler(Connector):
         """
         try:
             db = self.db_connection(self.database)
-            data = list(db[collection].find({query, filter}))
+            data = list(db[collection].find(query, filter))
             log.info(
                 f"Data has been successfully queried from the {collection} in the '{self.database}' database."
             )

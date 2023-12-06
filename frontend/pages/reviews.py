@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-from helpers.api_helpers import return_product_info
+from helpers.api_helpers import review_stats_query
 from helpers.review_helpers import (
     create_dist_df,
     create_ratings_df,
@@ -21,8 +21,8 @@ def reviews_page(data_1: dict, data_2: dict) -> None:
 
     return (None): Streamlit tab
     """
-    reviews = return_product_info(model=data_1["model_number"])
-    reviews_2 = return_product_info(model=data_2["model_number"])
+    reviews = review_stats_query(model=data_1["model_number"])
+    reviews_2 = review_stats_query(model=data_2["model_number"])
 
     st.header("Review comparison", divider="rainbow")
     # visualise the metric data

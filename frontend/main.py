@@ -2,22 +2,22 @@ import time
 
 import streamlit as st
 
-from helpers.api_helpers import return_product_info
+from helpers.api_helpers import product_api_query
 from pages.chatbot import chatbot_page
 from pages.products import product_page
 from pages.reviews import reviews_page
+from settings import settings
 
 
 def main() -> None:
     # Create the app
     st.set_page_config(
-        page_title="Blue Ribbon II - sports product comparison app",
-        page_icon=":bar_chart:",
-        layout="wide",
+        page_title=settings.TITLE,
+        page_icon=settings.PAGE_ICON,
+        layout=settings.LAYOUT,
     )
 
-    st.title("Blue Ribbon II - the sports comparison app")
-    st.markdown("_Prototype v0.0.1_")
+    st.markdown(settings.MARKDOWN)
 
     ### SIDEBAR ###
     with st.sidebar:
@@ -34,9 +34,9 @@ def main() -> None:
 
     # Return data on both products
     if product and product_2:
-        data = return_product_info(product=product)
+        data = product_api_query(product=product)
         time.sleep(5)
-        data_2 = return_product_info(product=product_2)
+        data_2 = product_api_query(product=product_2)
 
         ### PRODUCTS TAB ###
         with product_tab:

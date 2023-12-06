@@ -27,19 +27,16 @@ def chatbot_page(data_1: dict, data_2: dict) -> None:
     return (None): Streamlit tab
     """
     # default LLM response
-    default_sort = "helpful"
     default_question = "Can you succinctly summarise what customers said about this product? List what they liked and what they didn't like about the product"
 
     data_llm_1 = handle_llm_response(
-        sort=default_sort,
         question=default_question,
-        model_id=data_1["model_number"],
+        model=data_1["model_number"],
     )
     # time.sleep(70)
     data_llm_2 = handle_llm_response(
-        sort=default_sort,
         question=default_question,
-        model_id=data_2["model_number"],
+        model=data_2["model_number"],
     )
 
     column_1, column_2 = st.columns(2)
