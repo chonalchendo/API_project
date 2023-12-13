@@ -10,7 +10,7 @@ from ..config import proxies
 class AdidasDownloader:
     def __init__(self) -> None:
         self.proxy = proxies
-        self.timeout = httpx.Timeout(10.0, connect=60.0)
+        self.timeout = httpx.Timeout(100.0, connect=100.0)
 
     @retry(stop=stop_after_attempt(4), wait=wait_fixed(1))
     def download_json(self, url: str) -> Any:

@@ -51,7 +51,10 @@ class DataBaseServices:
                 )
             return reviews
         except Exception as e:
-            handle_errors.error_500(detail="Internal Server Error", error=e)
+            handle_errors.error_500(
+                detail=f"Internal Server Error - error when querying model {model}",
+                error=e,
+            )
 
 
 review_db_service = DataBaseServices()

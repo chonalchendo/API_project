@@ -7,7 +7,7 @@ from app.core.config import settings
 SCRAPEOPS_API_KEY = settings.SCRAPEOPS_API_KEY
 
 # proxy set up
-PROXY = settings.ZENROWS_API_KEY
+PROXY = settings.ZENROWS_API_KEY_2
 proxies = {"http://": PROXY, "https://": PROXY}
 
 

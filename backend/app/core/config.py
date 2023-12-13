@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = config("OPENAI_API_KEY", cast=str)
     SCRAPEOPS_API_KEY: str = config("SCRAPEOPS_API_KEY", cast=str)
     ZENROWS_API_KEY: str = config("ZENROWS_API", cast=str)
+    ZENROWS_API_KEY_2: str = config("ZENROWS_API_2", cast=str)
     IPROYAL_API_KEY: str = config("IPROYAL_API", cast=str)
     ORIGINS: list = [
         "http://localhost",
@@ -27,7 +28,7 @@ class Settings(BaseSettings):
 
 # logging set up
 logging.basicConfig(
-    level="NOTSET",
+    level="INFO",
     format="%(levelname)s [%(asctime)s] %(name)s - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
     handlers=[RichHandler(rich_tracebacks=True)],

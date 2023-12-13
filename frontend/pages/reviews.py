@@ -1,7 +1,11 @@
 import pandas as pd
-import plotly.express as px
 import streamlit as st
-from helpers.api_helpers import review_stats_query
+from components.graphs import (
+    create_timeseries_graph,
+    distribution_figure,
+    ratings_figure,
+)
+from helpers.api_helpers import review_stats_query, reviews_api_query
 from helpers.review_helpers import (
     create_dist_df,
     create_ratings_df,
@@ -23,6 +27,9 @@ def reviews_page(data_1: dict, data_2: dict) -> None:
     """
     reviews = review_stats_query(model=data_1["model_number"])
     reviews_2 = review_stats_query(model=data_2["model_number"])
+
+    total_reviews = reviews_api_query(model=data_1["model_number"])
+    total_reviews_2 = reviews_api_query(model=data_2["model_number"])
 
     st.header("Review comparison", divider="rainbow")
     # visualise the metric data
@@ -48,52 +55,22 @@ def reviews_page(data_1: dict, data_2: dict) -> None:
     dist_df = pd.concat([dist_df_1, dist_df_2])
 
     # create visualisations with the new data
-    ratings_fig = px.bar(
-        ratings_df,
-        x="type",
-        y="rating",
-        color="product",
-        barmode="group",
-        text="rating",
-        title="Detailed ratings of products",
-    )
-    ratings_fig.update_layout(
-        legend=dict(
-            font=dict(color="black", size=12),
-            bgcolor="LightSteelBlue",
-            bordercolor="Black",
-            borderwidth=2,
-        )
-    )
-    ratings_fig.update_traces(textposition="outside", texttemplate="%{text}")
+    ratings_fig = ratings_figure(df=ratings_df)
+    dist_fig = distribution_figure(df=dist_df)
 
-    dist_fig = px.bar(
-        dist_df,
-        x="value",
-        y="count",
-        color="product",
-        barmode="group",
-        text="count",
-        title="Ratings distribution",
-    )
-    dist_fig.update_layout(
-        legend=dict(
-            font=dict(color="#000000", size=12),
-            bgcolor="lightSteelBlue",
-            bordercolor="Black",
-            borderwidth=2,
-        )
-    )
-    dist_fig.update_traces(textposition="outside", texttemplate="%{text}")
+    reviews_time = create_timeseries_graph(df=total_reviews)
+    reviews_time_2 = create_timeseries_graph(df=total_reviews_2)
 
     col_1, col_2 = st.columns(2)
 
     with col_1:
         st.plotly_chart(ratings_fig, use_container_width=True)
+        st.plotly_chart(reviews_time, use_container_width=True)
         with st.expander("Ratings insights"):
             st.write("This is what people have rated this product for width etc.")
     with col_2:
         st.plotly_chart(dist_fig, use_container_width=True)
+        st.plotly_chart(reviews_time_2, use_container_width=True)
         with st.expander("Distribution insights"):
             st.write("This is how people have voted")
 

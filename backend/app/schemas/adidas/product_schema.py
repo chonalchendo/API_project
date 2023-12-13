@@ -18,7 +18,7 @@ class AttributeList(BaseModel):
     sport: list[str] | None = None
     weight: str | None = None
     closure: list[str]
-    surface: list[str]
+    surface: list[str] | None = None
     category: str
     foot_type: str | None = None
     sport_ids: list[str] | None = None

@@ -11,7 +11,10 @@ prod_1 = product_model("IF2375", "MBU20")
 prod_2 = product_model("GX9127", "LWY12")
 prod_3 = product_model("HQ1345", "LIZ85")
 prod_4 = product_model("HQ3688", "LKP28")
-prod_5 = product_model("IF4853", "IF4853")
+
+# restart scrape from here
+
+prod_5 = product_model("IF4853", "LKO64")
 prod_6 = product_model("IG5018", "MBU12")
 prod_7 = product_model("IF4857", "LKO63")
 prod_8 = product_model("ID0263", "MDF79")
@@ -20,7 +23,7 @@ prod_10 = product_model("HP6701", "LRE99")
 
 small_prod = product_model("HZ2181", "DLQ15")
 
-new_products = [prod_3, prod_4, prod_5, prod_6, prod_7, prod_8, prod_9, prod_10]
+new_products = [prod_9, prod_10]
 
 
 def main() -> None:

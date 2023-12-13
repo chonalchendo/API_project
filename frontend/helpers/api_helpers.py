@@ -6,7 +6,8 @@ import httpx
 # import streamlit as st
 from httpx import Response
 from rich import print
-from settings import API_URL
+
+from ..settings import API_URL
 
 
 def response_creator(
@@ -23,10 +24,10 @@ def response_creator(
     Returns:
         Response: http response
     """
-    with httpx.Client(base_url=base_url, timeout=100) as client:
-        return client.get(endpoint, params=params)
-    # resp = httpx.get(f"{base_url}/{endpoint}", params=params)
-    # return resp
+    # with httpx.Client(base_url=base_url, timeout=100) as client:
+    #     return client.get(endpoint, params=params)
+    resp = httpx.get(f"{base_url}/{endpoint}", params=params)
+    return resp
 
 
 def response_handler(response: Response) -> Any:
@@ -137,7 +138,7 @@ def reviews_api_query(
     if recommended:
         params["recommended"] = recommended
 
-    api = response_creator(endpoint=f"/{endpoint}/{model}/", params=params)
+    api = response_creator(endpoint=f"{endpoint}/{model}", params=params)
     return response_handler(api)
 
 
