@@ -20,8 +20,17 @@ async def read_reviews():
     summary="Get all the review information for a single model",
     response_model_by_alias=False,
 )
-async def return_all_model_reviews(model: str):
-    return await review_db_service.get_model_reviews(collection=Reviews, model=model)
+async def return_all_model_reviews(
+    model: str,
+    recommended: bool | None = None,
+    rating: int | None = None,
+):
+    return await review_db_service.get_model_reviews(
+        collection=Reviews,
+        model=model,
+        recommended=recommended,
+        rating=rating,
+    )
 
 
 @reviews_router.get(

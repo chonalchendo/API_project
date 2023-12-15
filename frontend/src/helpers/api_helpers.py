@@ -1,13 +1,9 @@
 from typing import Any
 
 import httpx
-
-# import pandas as pd
-# import streamlit as st
 from httpx import Response
 from rich import print
-
-from ..settings import API_URL
+from settings import API_URL
 
 
 def response_creator(

@@ -1,12 +1,12 @@
 import pandas as pd
 import streamlit as st
-from components.graphs import (
+from src.components.graphs import (
     create_timeseries_graph,
     distribution_figure,
     ratings_figure,
 )
-from helpers.api_helpers import review_stats_query, reviews_api_query
-from helpers.review_helpers import (
+from src.helpers.api_helpers import review_stats_query, reviews_api_query
+from src.helpers.review_helpers import (
     create_dist_df,
     create_ratings_df,
     display_review_stats,

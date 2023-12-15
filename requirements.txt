@@ -28,3 +28,4 @@ watchdog
 plotly
 icecream
 yarl
+pycountry

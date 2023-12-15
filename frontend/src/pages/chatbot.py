@@ -1,6 +1,6 @@
 import httpx
 import streamlit as st
-from helpers.api_helpers import handle_llm_response
+from src.helpers.api_helpers import handle_llm_response
 
 # User is prompted to ask a question about product reviews
 # Spinner to indicate the question is being processed

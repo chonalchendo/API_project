@@ -2,8 +2,7 @@ from typing import Any
 
 import pandas as pd
 import streamlit as st
-
-from helpers.api_helpers import review_stats_query
+from src.helpers.api_helpers import review_stats_query
 
 
 def review_metrics(data: dict) -> None:

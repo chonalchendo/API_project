@@ -1,6 +1,5 @@
 import pandas as pd
 import plotly.express as px
-from frontend.helpers.api_helpers import reviews_api_query
 from plotly.graph_objects import Figure
 from rich import print
 
@@ -111,11 +110,42 @@ def distribution_figure(df: pd.DataFrame) -> Figure:
     return dist_fig
 
 
+def review_locations_graph(df: pd.DataFrame) -> Figure:
+    """Create a bar chart of the locations of reviewers.
+
+    Args:
+        df (pd.DataFrame): dataframe of the locations of reviewers
+
+    Returns:
+        Figure: plotly bar chart
+    """
+    graph = px.bar(df, x="locations", y="count", title=f"Location of reviewers")
+    return graph
+
+
+def review_questions_graph(df: pd.DataFrame, question_label: str) -> Figure:
+    """Create a bar chart of the reviewer question responses.
+
+    Args:
+        df (pd.DataFrame): dataframe of the reviewer question responses
+        question_label (str): label of the question
+
+    Returns:
+        Figure: plotly bar chart
+    """
+    dff = df.groupby(["dimensionLabel", "valueLabel"]).value_counts().reset_index()
+    dfs = dff.loc[dff["dimensionLabel"] == question_label].sort_values(
+        by="count", ascending=False
+    )
+    graph = px.bar(
+        dfs,
+        x="valueLabel",
+        y="count",
+        barmode="group",
+        title=f"Customer responses to {question_label}",
+    )
+    return graph
+
+
 if __name__ == "__main__":
-    model = "DLQ15"
-    resp = reviews_api_query(model=model)
-    data = pd.DataFrame(resp)
-    print(data)
-    graph = create_timeseries_graph(df=data)
-    # print(graph)
-    graph.show()
+    model = "MBU20"

@@ -1,5 +1,5 @@
 import streamlit as st
-from helpers.product_helpers import (
+from src.helpers.product_helpers import (
     create_image_grid,
     details_comp,
     get_product_images,

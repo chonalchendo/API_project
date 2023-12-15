@@ -1,3 +1,4 @@
+from app.schemas.adidas.review_schema import Reviews
 from app.utils.errors import handle_errors
 from beanie import Document
 
@@ -25,7 +26,10 @@ class DataBaseServices:
 
     @staticmethod
     async def get_model_reviews(
-        collection: Document, model: str
+        collection: Document,
+        model: str,
+        recommended: bool | None = None,
+        rating: int | None = None,
     ) -> list[Document] | None:
         """
         Method that returns all the review information for a specified model from
@@ -41,10 +45,17 @@ class DataBaseServices:
             list[Document] - return a list of MongoDB documents
 
         """
+        query = {}
         if model:
-            query = {"modelId": model}
+            query["modelId"] = model
+        if recommended:
+            query["isRocommended"] = recommended
+        if rating:
+            query["rating"] = rating
+
         try:
             reviews = await collection.find(query).to_list()
+
             if not reviews:
                 handle_errors.error_404(
                     detail=f"Query did not return reviews for {model}"

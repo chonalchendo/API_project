@@ -2,11 +2,11 @@ import time
 
 import streamlit as st
 
-from helpers.api_helpers import product_api_query
-from pages.chatbot import chatbot_page
-from pages.products import product_page
-from pages.reviews import reviews_page
 from settings import settings
+from src.helpers.api_helpers import product_api_query
+from src.pages.chatbot import chatbot_page
+from src.pages.products import product_page
+from src.pages.reviews import reviews_page
 
 
 def main() -> None:
