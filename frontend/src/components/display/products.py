@@ -1,12 +1,15 @@
-from io import BytesIO
-
-import httpx
-import pandas as pd
 import streamlit as st
-from PIL import Image
 
 
 def product_details(data: dict) -> st.markdown:
+    """Display product details in a streamlit markdown widget
+
+    Args:
+        data (dict): product api response
+
+    Returns:
+        st.markdown: markdown widget
+    """
     details = data["product_description"]["usps"]
     s = " "
     for i in details:
@@ -15,6 +18,12 @@ def product_details(data: dict) -> st.markdown:
 
 
 def details_comp(data_1: dict, data_2: dict) -> None:
+    """Display product details side by side
+
+    Args:
+        data_1 (dict): data for first product
+        data_2 (dict): data for second product
+    """
     col_1, col_2 = st.columns(2)
     with col_1:
         st.write(data_1["name"])
@@ -25,8 +34,12 @@ def details_comp(data_1: dict, data_2: dict) -> None:
 
 
 def product_metrics(data: dict) -> None:
+    """Display product metrics in a streamlit metric widget
+
+    Args:
+        data (dict): product api response
+    """
     pricing = data["pricing_information"]
-    attrs = data["attribute_list"]
     c1, c2, c3 = st.columns(3)
     with st.container():
         c1.metric("Current price", f"£{pricing['currentPrice']}")
@@ -36,6 +49,16 @@ def product_metrics(data: dict) -> None:
 
 
 def calculate_price_diff(data_1: dict, data_2: dict, price: str) -> tuple[int, int]:
+    """Calculate the difference in price between two products
+
+    Args:
+        data_1 (dict): api response for first product
+        data_2 (dict): api response for second product
+        price (str): price variable to compare
+
+    Returns:
+        tuple[int, int]: difference in price between products
+    """
     pricing_1 = data_1["pricing_information"]
     pricing_2 = data_2["pricing_information"]
 
@@ -46,6 +69,12 @@ def calculate_price_diff(data_1: dict, data_2: dict, price: str) -> tuple[int, i
 
 
 def price_comp(data_1: dict, data_2: dict) -> None:
+    """Display product prices side by side
+
+    Args:
+        data_1 (dict): api response for first product
+        data_2 (dict): api response for second product
+    """
     pricing_1 = data_1["pricing_information"]
     pricing_2 = data_2["pricing_information"]
 
@@ -80,69 +109,16 @@ def price_comp(data_1: dict, data_2: dict) -> None:
         )
 
 
-def get_product_images(data: dict) -> list[str]:
-    view_list = data["view_list"]
-    images = [
-        image["image_url"]
-        for image in view_list
-        if "standard" in image["type"] or "detail" in image["type"]
-    ]
-    return images
-
-
 def create_image_grid(n: int, images: list[str]) -> None:
+    """Create a grid of images
+
+    Args:
+        n (int): number of columns
+        images (list[str]): list of image URLs
+    """
     groups = [images[i : i + n] for i in range(0, len(images), n)]
     for group in groups:
         image_cols = st.columns(n)
         for i, image in enumerate(group):
             image_cols[i].image(image, use_column_width=True)
 
-
-def open_image(image_url: str) -> Image.open:
-    get_image = httpx.get(image_url)
-    image = Image.open(BytesIO(get_image.content))
-    return image
-
-
-def prod_info_dataframe(data: list[dict], feature: str) -> pd.DataFrame:
-    if "wash" not in feature:
-        prod_info = [{**product[feature], "name": product["name"]} for product in data]
-    else:
-        prod_info = [
-            {**product["product_description"][feature], "name": product["name"]}
-            for product in data
-        ]
-
-    return pd.DataFrame(prod_info)
-
-
-def validate_columns(data: pd.DataFrame) -> pd.DataFrame:
-    list_cols = ["name"]
-    bool_cols = ["name"]
-    string_cols = []
-    int_cols = ["name"]
-    for col in data.columns.tolist():
-        is_list = data[col].apply(lambda x: isinstance(x, list))
-        if any(is_list):
-            list_cols.append(col)
-        if data[col].dtype == "bool":
-            bool_cols.append(col)
-        if data[col].dtype == "O" and not any(is_list):
-            string_cols.append(col)
-        if data[col].dtype == "int" or data[col].dtype == "float":
-            int_cols.append(col)
-
-    list_df = pd.DataFrame(data[list_cols])
-    bool_df = pd.DataFrame(data[bool_cols])
-    string_df = pd.DataFrame(data[string_cols])
-    int_df = pd.DataFrame(data[int_cols])
-
-    return list_df, bool_df, string_df, int_df
-
-
-def transpose_dataframes(data: pd.DataFrame) -> pd.DataFrame:
-    val_dfs = validate_columns(data)
-    list_df, bool_df, string_df, int_df = tuple(
-        [df.set_index("name").T.reset_index() for df in val_dfs]
-    )
-    return list_df, bool_df, string_df, int_df

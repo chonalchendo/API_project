@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+from src.components.display.reviews import review_metrics
 from src.components.graphs import (
     create_timeseries_graph,
     distribution_figure,
@@ -8,22 +9,19 @@ from src.components.graphs import (
     review_questions_graph,
 )
 from src.data.adidas.reviews import (
+    create_dist_df,
+    create_ratings_df,
     create_review_location_df,
     create_review_questions_df,
     create_review_timeseries_df,
+    display_review_stats,
+    flatten_review_stats,
 )
 from src.helpers.api_helpers import (
     get_all_products,
     product_api_query,
     review_stats_query,
     reviews_api_query,
-)
-from src.helpers.review_helpers import (
-    create_dist_df,
-    create_ratings_df,
-    display_review_stats,
-    flatten_review_stats,
-    review_metrics,
 )
 
 st.title("Compare review information")
@@ -61,7 +59,6 @@ if product_1 and product_2:
 
     reviews = review_stats_query(model=data_1["model_number"])
     reviews_2 = review_stats_query(model=data_2["model_number"])
-    print(reviews)
 
     total_reviews = reviews_api_query(model=data_1["model_number"])
     total_reviews_2 = reviews_api_query(model=data_2["model_number"])
@@ -97,19 +94,22 @@ if product_1 and product_2:
     time_df_1 = create_review_timeseries_df(api=total_reviews)
     time_df_2 = create_review_timeseries_df(api=total_reviews_2)
 
-    reviews_time = create_timeseries_graph(df=time_df_1)
-    reviews_time_2 = create_timeseries_graph(df=time_df_2)
+    # concatenate timeseries dataframes
+    ts_df = pd.concat([time_df_1, time_df_2])
+    reviews_time = create_timeseries_graph(ts_df)
 
     # review locations graphs
     loc_df_1 = create_review_location_df(api=total_reviews)
-    loc_graph_1 = review_locations_graph(df=loc_df_1)
-
     loc_df_2 = create_review_location_df(api=total_reviews_2)
-    loc_graph_2 = review_locations_graph(df=loc_df_2)
+
+    loc_df = pd.concat([loc_df_1, loc_df_2])
+    loc_graph = review_locations_graph(df=loc_df)
 
     # review questions graphs
     qs_df_1 = create_review_questions_df(api=reviews)
     qs_df_2 = create_review_questions_df(api=reviews_2)
+
+    qs_df = pd.concat([qs_df_1, qs_df_2])
 
     questions = tuple(qs_df_1["label"].unique())
 
@@ -118,25 +118,18 @@ if product_1 and product_2:
     with col_1:
         st.plotly_chart(ratings_fig, use_container_width=True)
         st.plotly_chart(reviews_time, use_container_width=True)
-        st.plotly_chart(loc_graph_1, use_container_width=True)
-        with st.expander("Ratings insights"):
-            st.write("This is what people have rated this product for width etc.")
+        selector = st.selectbox("Select graph metric", questions)
+        qs_graph_1 = review_questions_graph(df=qs_df, question=selector)
+        st.plotly_chart(qs_graph_1, use_container_width=True)
+        # with st.expander("Ratings insights"):
+        #     st.write("This is what people have rated this product for width etc.")
 
     with col_2:
         st.plotly_chart(dist_fig, use_container_width=True)
-        st.plotly_chart(reviews_time_2, use_container_width=True)
-        st.plotly_chart(loc_graph_2, use_container_width=True)
-        with st.expander("Distribution insights"):
-            st.write("This is how people have voted")
-
-    with col_1:
-        selector = st.selectbox("Select graph metric", questions)
-        qs_graph_1 = review_questions_graph(df=qs_df_1, question=selector)
-        st.plotly_chart(qs_graph_1, use_container_width=True)
-
-    with col_2:
-        qs_graph_2 = review_questions_graph(df=qs_df_2, question=selector)
-        st.plotly_chart(qs_graph_2, use_container_width=True)
+        st.plotly_chart(loc_graph, use_container_width=True)
+        # with st.expander("Distribution insights"):
+        #     st.write("This is how people have voted")
+        #
 
     df_1 = flatten_review_stats(
         model=data_1["model_number"], product_name=data_1["name"]

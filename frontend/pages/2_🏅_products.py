@@ -1,12 +1,14 @@
 import streamlit as st
 from src.helpers.api_helpers import get_all_products, product_api_query
-from src.helpers.product_helpers import (
+from src.components.display.products import (
     create_image_grid,
     details_comp,
-    get_product_images,
     price_comp,
+)
+from src.data.adidas.products import (
     prod_info_dataframe,
     transpose_dataframes,
+    get_product_images,
 )
 
 st.title("Product Comparison")
