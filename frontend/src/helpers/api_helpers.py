@@ -7,7 +7,10 @@ from settings import API_URL
 
 
 def response_creator(
-    endpoint: str, base_url: str = API_URL, params: dict[str, Any] | None = None
+    endpoint: str,
+    base_url: str = API_URL,
+    timeout: float = 30.0,
+    params: dict[str, Any] | None = None,
 ) -> Response:
     """
     Function that deals with making the call to the API and returning the http response.
@@ -22,7 +25,7 @@ def response_creator(
     """
     # with httpx.Client(base_url=base_url, timeout=100) as client:
     #     return client.get(endpoint, params=params)
-    resp = httpx.get(f"{base_url}/{endpoint}", params=params)
+    resp = httpx.get(f"{base_url}/{endpoint}", params=params, timeout=timeout)
     return resp
 
 
@@ -61,9 +64,21 @@ def get_reviews_by_model(
     return [review for review in data if review.get("modelId") == model_id]
 
 
+def get_all_products() -> Any:
+    """
+    Function that returns all products from the product API.
+
+    Returns:
+        Any
+    """
+    api = response_creator(endpoint="products/all")
+    return response_handler(api)
+
+
 def product_api_query(
     endpoint: str = "products",
     product: str | None = None,
+    name: str | None = None,    
     model: str | None = None,
     price: int | None = None,
     category: str | None = None,
@@ -90,6 +105,8 @@ def product_api_query(
     params = {}
     if model:
         params["model"] = model
+    if name:
+        params["name"] = name
     if price:
         params["price"] = price
     if category:
@@ -101,10 +118,10 @@ def product_api_query(
 
     if product:
         # return a single product
-        api = response_creator(endpoint=f"/{endpoint}/{product}")
+        api = response_creator(endpoint=f"{endpoint}/{product}")
     else:
         # query the products database
-        api = response_creator(endpoint=f"/{endpoint}/", params=params)
+        api = response_creator(endpoint=f"{endpoint}/", params=params)
     return response_handler(api)[0]
 
 
@@ -190,6 +207,8 @@ def handle_llm_response(
     if question:
         params["question"] = question
 
-    resp = response_creator(endpoint=f"/{endpoint}/{model}", params=params)
+    resp = response_creator(
+        endpoint=f"{endpoint}/{model}", timeout=100.0, params=params
+    )
     data = response_handler(resp)
     return data["response"]

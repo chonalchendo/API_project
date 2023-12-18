@@ -1,4 +1,5 @@
 import streamlit as st
+from src.helpers.api_helpers import get_all_products, product_api_query
 from src.helpers.product_helpers import (
     create_image_grid,
     details_comp,
@@ -8,18 +9,40 @@ from src.helpers.product_helpers import (
     transpose_dataframes,
 )
 
+st.title("Product Comparison")
 
-def product_page(data_1: dict, data_2: dict) -> None:
-    """
-    Function that creates the product page.
+products = get_all_products()
+product_names = [product["name"] for product in products]
 
-    args:
-        product_1 (str): First product to compare
-        product_2 (str): Second product to compare
 
-    return: None
-    """
-    # display product info
+col1, col2 = st.columns(2)
+
+with col1:
+    product_1 = st.selectbox("Product 1", product_names, index=None)
+    if not product_1:
+        st.info("Please select a product.", icon="ℹ️")
+    else:
+        st.success(f"You have selected product {product_1}!", icon="✅")
+
+with col2:
+    product_2 = st.selectbox("Product 2", product_names, index=None)
+    if not product_2:
+        st.info("Please select a product.", icon="ℹ️")
+    else:
+        st.success(f"You have selected product {product_2}!", icon="✅")
+
+
+# Return data on both products
+if product_1 and product_2:
+    for product in products:
+        if product_1 == product["name"]:
+            prod_1 = product["product_id"]
+        if product_2 == product["name"]:
+            prod_2 = product["product_id"]
+
+    data_1 = product_api_query(product=prod_1)
+    data_2 = product_api_query(product=prod_2)
+
     st.title(f"{data_1['name']} Vs {data_2['name']}")
 
     images_1 = get_product_images(data_1)

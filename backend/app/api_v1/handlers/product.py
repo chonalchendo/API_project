@@ -4,6 +4,11 @@ from fastapi import APIRouter
 
 product_router = APIRouter()
 
+@product_router.get(
+    "/all", summary="Return all products from MongoDB", status_code=200
+)
+async def return_all_products():
+    return await product_db.list_products(collection=Product)
 
 @product_router.get(
     "/",
