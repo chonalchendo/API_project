@@ -31,6 +31,8 @@ The app has exclusively been built with Python, taking advantage of the rich eco
 - **Rich**: colourful debugging package used in conjunction with the logger library
 
 ## Page examples
+The app is currently not available for use but here are some screenshots below demonstrate some of its capabilities.
+
 ### Home 
 ![EFE3A5D4-E5A6-428C-94BE-D83F14739378_1_201_a](https://github.com/chonalchendo/API_project/assets/110059232/49bf24b3-1f23-4c20-8576-3fbc485e5366)
 
