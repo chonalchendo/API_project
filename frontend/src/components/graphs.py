@@ -1,8 +1,6 @@
 import pandas as pd
 import plotly.express as px
 from plotly.graph_objects import Figure
-from rich import print
-from src.data.adidas.reviews import create_review_questions_df
 from src.helpers.api_helpers import review_stats_query
 
 

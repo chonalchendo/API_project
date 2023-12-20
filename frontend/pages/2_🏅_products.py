@@ -1,16 +1,21 @@
 import streamlit as st
-from src.helpers.api_helpers import get_all_products, product_api_query
-from src.components.display.products import (
-    create_image_grid,
-    details_comp,
-    price_comp,
-)
+from src.components.display.products import create_image_grid, details_comp, price_comp
 from src.data.adidas.products import (
+    get_product_images,
     prod_info_dataframe,
     transpose_dataframes,
-    get_product_images,
 )
+from src.helpers.api_helpers import get_all_products, product_api_query
 
+st.set_page_config(
+    page_title="Products",
+    page_icon="🏅",
+    layout="wide",
+    menu_items={
+        "Get help": "https://github.com/chonalchendo/API_project",
+        "About": "# An app designed to help athletes decide what product is best for them.",
+    },
+)
 st.title("Product Comparison")
 
 products = get_all_products()

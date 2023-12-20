@@ -25,7 +25,4 @@ scikit-learn
 fake-useragent
 streamlit
 watchdog
-plotly
 icecream
-yarl
-pycountry

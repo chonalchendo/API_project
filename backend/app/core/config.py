@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "Blue Ribbon 2"
     MONGO_CONNECTION_STRING: str = config("MONGO_CONNECTION_STRING", cast=str)
-    ATLAS_CONNECTION_STRING: str = config("ATLAS_CONNECTION_STRING", cast=str)
+    # ATLAS_CONNECTION_STRING: str = config("ATLAS_CONNECTION_STRING", cast=str)
     OPENAI_API_KEY: str = config("OPENAI_API_KEY", cast=str)
     SCRAPEOPS_API_KEY: str = config("SCRAPEOPS_API_KEY", cast=str)
     ZENROWS_API_KEY: str = config("ZENROWS_API", cast=str)
@@ -20,6 +20,8 @@ class Settings(BaseSettings):
         "http://localhost:8501",
         "http://192.168.0.56",
         "http://192.168.0.56:8501",
+        "http://localhost:8000",
+        "http://0.0.0.0:8080",
     ]
 
     class Config:

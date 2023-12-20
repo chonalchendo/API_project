@@ -1,0 +1,6 @@
+httpx
+streamlit
+plotly
+pycountry
+pandas
+rich

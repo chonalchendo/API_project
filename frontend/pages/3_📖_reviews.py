@@ -24,6 +24,17 @@ from src.helpers.api_helpers import (
     reviews_api_query,
 )
 
+st.set_page_config(
+    page_title="Reviews",
+    page_icon="📖",
+    layout="wide",
+    menu_items={
+        "Get help": "https://github.com/chonalchendo/API_project",
+        "About": "# An app designed to help athletes decide what product is best for them.",
+    },
+)
+
+
 st.title("Compare review information")
 
 products = get_all_products()

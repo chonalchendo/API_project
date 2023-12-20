@@ -42,4 +42,3 @@ app.include_router(router, prefix=settings.API_V1_STR)
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
-# could maybe create an app similar to that Codeclan guy's planet.DB?

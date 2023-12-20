@@ -1,40 +1,53 @@
 import streamlit as st
 
 from settings import settings
-from src.helpers.api_helpers import get_all_products, product_api_query
 
 # Create the app
 st.set_page_config(
-    page_title="Blue Ribbon II - the sports product comparison app",
-    page_icon=settings.PAGE_ICON,
-    layout=settings.LAYOUT,
+    page_title="Home",
+    page_icon="🏠",
+    layout="wide",
     menu_items={
         "Get help": "https://github.com/chonalchendo/API_project",
         "About": "# An app designed to help athletes decide what product is best for them.",
     },
 )
 
-st.title("Blue Ribbon II")
+st.title("Blue Ribbon II 🎗️🏃- Elevating your Sports Gear Experience")
+
+
+about = """
+### About
+Welcome to Blue Ribbon II, an innovative sports comparison app designed to 
+empower users with comprehensive insights into sports products, allowing them 
+to effortlessly contrast and compare offerings from various manufacturers. 
+The name "Blue Ribbon II" pays homage to Phil Knight's original company which
+disrupted the sports industry with its innovative products and marketing.
+
+### Unleash the Power of Informed Choices
+Blue Ribbon II is your go-to destination for diving deep into the world of 
+sports products. Whether you're a seasoned athlete or a casual fitness enthusiast, 
+our app equips you with the knowledge needed to make informed decisions about 
+your gear. We believe that your sports equipment should be as exceptional as 
+your performance, and Blue Ribbon II is here to make that happen.
+
+### Adidas Running Shoes: Just the Beginning
+Currently, Blue Ribbon II focuses on Adidas running shoes, offering a curated 
+selection that embodies the perfect fusion of style, technology, and performance. 
+We are working hard to expand our product offering to include more sportswear brands.
+
+### What we offer
+- High level comparison of general product information including a price comparison 
+and detailed product specifications
+- In-depth review analysis including stats on how customers rate products based on 
+comfort, width, size and quality. As well as, how popular a product is, and how 
+customers intend to use their purchased product.
+- We use the latest **Large Languaga Model (LLM) technology from OpenAI** to
+allow users to ask more in depth questions about each product so they can really 
+understand if this product is right for them.
+\n**👈 Select a page from the sidebar**
+"""
 
 st.markdown(settings.MARKDOWN)
 
-
-st.write("What products would you like to compare?")
-
-products = get_all_products()
-product_names = [product["name"] for product in products]
-
-product_1 = st.selectbox("Product 1", product_names, index=None)
-product_2 = st.selectbox("Product 2", product_names, index=None)
-
-
-# Return data on both products
-if product_1 and product_2:
-    for product in products:
-        if product_1 == product["name"]:
-            prod_1 = product["product_id"]
-        if product_2 == product["name"]:
-            prod_2 = product["product_id"]
-
-    data_1 = product_api_query(product=prod_1)
-    data_2 = product_api_query(product=prod_2)
+st.markdown(about)

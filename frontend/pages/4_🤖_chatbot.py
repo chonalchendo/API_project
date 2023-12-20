@@ -5,6 +5,17 @@ from src.helpers.api_helpers import (
     product_api_query,
 )
 
+st.set_page_config(
+    page_title="Chatbot",
+    page_icon="🤖",
+    layout="wide",
+    menu_items={
+        "Get help": "https://github.com/chonalchendo/API_project",
+        "About": "# An app designed to help athletes decide what product is best for them.",
+    },
+)
+
+
 st.title("Ask our chatbot for more detailed product information!")
 
 products = get_all_products()
